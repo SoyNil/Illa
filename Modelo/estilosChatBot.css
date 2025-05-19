@@ -1,0 +1,196 @@
+/* Animación de apertura */
+@keyframes abrirChat {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Animación de cierre */
+@keyframes cerrarChat {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+}
+/* Contenedor del chatbot */
+.chatgpt-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 350px;
+    height: 500px;
+    background: #2c2f33; /* Fondo oscuro elegante */
+    border-radius: 15px;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 1000;
+    animation: abrirChat 0.3s ease-out;
+}
+
+/* Botón para cerrar */
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    font-size: 18px;
+    color: #ffffff;
+    cursor: pointer;
+}
+
+/* Encabezado del chatbot */
+.chat-header {
+    background: #23272a;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px;
+    text-align: center;
+    border-bottom: 2px solid #7289da;
+}
+
+/* Área de mensajes */
+.chat-body {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto; /* Habilita el scroll vertical */
+    color: #d1d1d1; /* Letra gris clara */
+    font-size: 14px;
+    max-height: 400px; /* Limita la altura */
+    scrollbar-width: thin; /* Reduce el ancho de la barra de desplazamiento */
+    scrollbar-color: #7289da #23272a; /* Color de la barra */
+}
+
+/* Personalización del scroll en navegadores WebKit (Chrome, Edge, Safari) */
+.chat-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+/* Mensajes del usuario */
+.chat-body .user {
+    text-align: right;
+    color: #ffffff;
+    background: #7289da;
+    padding: 8px;
+    border-radius: 10px;
+    display: inline-block;
+    max-width: 80%;
+    margin: 5px 0;
+}
+
+/* Mensajes del bot */
+.chat-body p {
+    text-align: left;
+    color: #d1d1d1;
+    background: #40444b;
+    padding: 8px;
+    border-radius: 10px;
+    display: inline-block;
+    max-width: 80%;
+    margin: 5px 0;
+}
+
+/* Caja de entrada de texto */
+.chat-input {
+    display: flex;
+    background: #23272a;
+    padding: 10px;
+    border-top: 2px solid #7289da;
+}
+
+.chat-input input {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    color: #ffffff;
+    background: #40444b;
+    outline: none;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Botón de enviar */
+.chat-input button {
+    margin-left: 10px;
+    padding: 10px 15px;
+    background: #7289da;
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s ease;
+}
+
+.chat-input button:hover {
+    background: #5a6fab;
+}
+
+#chat {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Espacio entre mensajes */
+    max-height: 400px; /* Ajusta la altura máxima del chat */
+    overflow-y: auto; /* Permite el desplazamiento si hay muchos mensajes */
+    padding: 10px;
+}
+
+/* Estilos generales para los mensajes */
+.mensaje {
+    max-width: 75%;
+    padding: 10px;
+    border-radius: 15px;
+    margin: 5px;
+    word-wrap: break-word;
+    font-size: 14px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Mensajes del usuario */
+.usuario {
+    background-color: #007bff;
+    color: white;
+    align-self: flex-end;
+    border-bottom-right-radius: 0px;
+}
+
+/* Mensajes del bot */
+.bot {
+    background-color: #f1f1f1;
+    color: black;
+    align-self: flex-start;
+    border-bottom-left-radius: 0px;
+}
+
+.chatgpt-button {
+    position: fixed;
+    bottom: 20px;  /* Separado 20px del borde inferior */
+    right: 20px;   /* Separado 20px del borde derecho */
+    z-index: 1100; /* Para que esté por encima de otros elementos */
+    background-color: #007bff; /* Color azul */
+    border: none;
+    border-radius: 50px;
+    padding: 12px 20px;
+    font-size: 18px;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    transition: background-color 0.3s ease;
+}
+
+.chatgpt-button:hover {
+    background-color: #0056b3;
+}

@@ -1,0 +1,113 @@
+body {
+    background-color: #212529;
+}
+
+.card {
+    background-color: #343a40;
+    border: none;
+    border-radius: 10px;
+}
+
+.navbar {
+    background-color: #1a1e21;
+}
+
+.navbar-brand {
+    color: #f8f9fa !important;
+    font-weight: bold;
+}
+
+.nav-link {
+    color: #f8f9fa !important;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #004085;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+}
+
+.btn-warning {
+    background-color: #ffc107;
+    border-color: #ffc107;
+}
+
+.btn-warning:hover {
+    background-color: #e0a800;
+    border-color: #d39e00;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+}
+
+#patientList {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+#patientChart {
+    max-height: 350px;
+}
+
+.border-bottom {
+    border-color: #495057 !important;
+}
+
+.form-select, .form-control {
+    background-color: #343a40;
+    border-color: #495057;
+    color: #f8f9fa;
+}
+
+.form-select:focus, .form-control:focus {
+    background-color: #343a40;
+    border-color: #007bff;
+    color: #f8f9fa;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.modal-content {
+    background-color: #343a40;
+    border-color: #495057;
+}
+
+.modal-header, .modal-footer {
+    border-color: #495057;
+}
+
+.btn-close-white {
+    filter: invert(1);
+}
+
+@media (max-width: 768px) {
+    .navbar-nav {
+        text-align: center;
+    }
+    .nav-item {
+        margin: 10px 0;
+    }
+    .col-md-6 {
+        margin-bottom: 20px;
+    }
+}

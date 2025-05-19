@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenido</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../Modelo/estilosPrincipal.css">
+    <link rel="stylesheet" href="../Modelo/estilosChatBot.css">
+</head>
+<body class="bg-dark">
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+            <div class="container-fluid">
+                <span class="navbar-brand" id="welcomeMessage"></span>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <button class="btn btn-primary nav-link mx-2" onclick="window.location.href='agregar_aviso.html'">Agregar aviso</button>
+                        </li>
+                        <li class="nav-item" id="registerButton" style="display: none;">
+                            <button class="btn btn-primary nav-link mx-2" onclick="window.location.href='registro.html'">Registrar</button>
+                        </li>
+                        <li class="nav-item" id="viewUsersButton" style="display: none;">
+                            <button class="btn btn-primary nav-link mx-2">Ver Usuarios</button>
+                        </li>
+                        <li class="nav-item" id="viewProfileButton" style="display: none;">
+                            <button class="btn btn-primary nav-link mx-2">Ver Perfil</button>
+                        </li>
+                        <li class="nav-item">
+                            <a href="../Controlador/logout.php" class="btn btn-secondary nav-link mx-2">Cerrar Sesión</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container mt-5 pt-5">
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <h2 class="card-title text-center mb-4 text-light">Bienvenido</h2>
+                <div id="userInfo">
+                    <p class="text-light"><strong>Nombre:</strong> <span id="nombre"></span></p>
+                    <p class="text-light"><strong>Usuario:</strong> <span id="usuario"></span></p>
+                    <p class="text-light"><strong>Correo:</strong> <span id="correo"></span></p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h3 class="card-title text-light mb-3">Lista de Pacientes</h3>
+                        <button id="addPatientButton" class="btn btn-success mb-3" style="display: none;">Agregar Paciente</button>
+                        <div class="mb-3">
+                            <input type="text" id="searchPatients" class="form-control bg-dark text-light" placeholder="Buscar por Nombre o DNI">
+                        </div>
+                        <div id="patientList"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h3 class="card-title text-light mb-3">Gráfico de Ganancias</h3>
+                        <select id="chartType" class="form-select mb-3 bg-dark text-light">
+                            <option value="pie">Gráfico de Pie</option>
+                            <option value="line">Gráfico de Línea</option>
+                            <option value="bar">Gráfico de Barras</option>
+                            <option value="column">Gráfico de Columnas</option>
+                        </select>
+                        <canvas id="patientChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para editar paciente -->
+    <div class="modal fade" id="editPatientModal" tabindex="-1" aria-labelledby="editPatientModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark text-light">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editPatientModalLabel">Editar Paciente</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editPatientForm">
+                        <input type="hidden" id="editPatientId">
+                        <div class="mb-3">
+                            <label for="editDNI" class="form-label">DNI</label>
+                            <input type="text" class="form-control bg-dark text-light" id="editDNI" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editNombre" class="form-label">Nombre</label>
+                            <input type="text" class="form-control bg-dark text-light" id="editNombre" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editFecha" class="form-label">Fecha de Cita</label>
+                            <input type="date" class="form-control bg-dark text-light" id="editFecha" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editPrecio" class="form-label">Precio</label>
+                            <input type="number" step="0.01" class="form-control bg-dark text-light" id="editPrecio" required>
+                        </div>
+                        <div class="mb-3" id="descuentoGroup">
+                            <label for="editDescuento" class="form-label">Porcentaje de Descuento</label>
+                            <input type="number" step="0.01" class="form-control bg-dark text-light" id="editDescuento">
+                        </div>
+                        <div class="mb-3" id="psychologistGroup">
+                            <label for="editPsychologist" class="form-label">Psicólogo Asignado</label>
+                            <select class="form-select bg-dark text-light" id="editPsychologist"></select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" onclick="savePatientChanges()">Guardar Cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para agregar paciente -->
+    <div class="modal fade" id="addPatientModal" tabindex="-1" aria-labelledby="addPatientModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark text-light">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addPatientModalLabel">Agregar Paciente</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addPatientForm">
+                        <div class="mb-3">
+                            <label for="addDNI" class="form-label">DNI</label>
+                            <input type="text" class="form-control bg-dark text-light" id="addDNI" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addNombre" class="form-label">Nombre</label>
+                            <input type="text" class="form-control bg-dark text-light" id="addNombre" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addFecha" class="form-label">Fecha de Cita</label>
+                            <input type="date" class="form-control bg-dark text-light" id="addFecha" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addPrecio" class="form-label">Precio</label>
+                            <input type="number" step="0.01" class="form-control bg-dark text-light" id="addPrecio" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addDescuento" class="form-label">Porcentaje de Descuento</label>
+                            <input type="number" step="0.01" class="form-control bg-dark text-light" id="addDescuento" value="0">
+                        </div>
+                        <div class="mb-3">
+                            <label for="addPsychologist" class="form-label">Psicólogo Asignado</label>
+                            <select class="form-select bg-dark text-light" id="addPsychologist" required></select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" onclick="addPatient()">Agregar Paciente</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Botón para abrir el chat -->
+    <button id="chatgpt-btn" class="chatgpt-button">💬 IllaBot</button>
+    <!-- Contenedor del chat -->
+    <div id="chatgpt-container" class="chatgpt-container">
+        <button id="close-chat" class="close-btn">✖</button>
+        <div id="chat-content"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <script src="../Controlador/principal.js"></script>
+    <script src="../Controlador/chatbot.js" defer></script>
+</body>
+</html>
