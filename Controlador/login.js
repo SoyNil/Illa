@@ -26,3 +26,15 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         alert('Error al conectar con el servidor');
     }
 });
+// Mostrar/ocultar contraseña
+document.getElementById('togglePassword').addEventListener('click', function () {
+    const passwordInput = document.getElementById('contrasena');
+    const eyeIcon = document.getElementById('eyeIcon');
+    
+    const isPassword = passwordInput.type === 'password';
+    passwordInput.type = isPassword ? 'text' : 'password';
+    
+    // Cambiar ícono de ojo
+    eyeIcon.classList.toggle('bi-eye');
+    eyeIcon.classList.toggle('bi-eye-slash');
+});

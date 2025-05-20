@@ -34,11 +34,22 @@
                             </div>
                             <div class="mb-3">
                                 <label for="contrasena" class="form-label text-light">Contraseña</label>
-                                <input type="password" class="form-control" id="contrasena" name="contrasena" required>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="contrasena" name="contrasena" required>
+                                    <button type="button" class="btn btn-outline-light" id="togglePassword1">
+                                        <i class="bi bi-eye" id="eyeIcon1"></i>
+                                    </button>
+                                </div>
                             </div>
+
                             <div class="mb-3">
                                 <label for="confirmarContrasena" class="form-label text-light">Verificar Contraseña</label>
-                                <input type="password" class="form-control" id="confirmarContrasena" name="confirmarContrasena" required>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="confirmarContrasena" name="confirmarContrasena" required>
+                                    <button type="button" class="btn btn-outline-light" id="togglePassword2">
+                                        <i class="bi bi-eye" id="eyeIcon2"></i>
+                                    </button>
+                                </div>
                             </div>
                             <button type="submit" class="btn btn-primary w-100 mb-3">Registrar Psicólogo</button>
                             <a href="principal.html" class="btn btn-outline-light w-100">Volver al Menú Principal</a>

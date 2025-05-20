@@ -60,4 +60,23 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Error al conectar con el servidor: ' + error.message);
         }
     });
+    // Mostrar/ocultar contraseña - campo 1
+    document.getElementById('togglePassword1').addEventListener('click', () => {
+        const input = document.getElementById('contrasena');
+        const icon = document.getElementById('eyeIcon1');
+        const visible = input.type === 'text';
+        input.type = visible ? 'password' : 'text';
+        icon.classList.toggle('bi-eye');
+        icon.classList.toggle('bi-eye-slash');
+    });
+
+    // Mostrar/ocultar contraseña - campo 2
+    document.getElementById('togglePassword2').addEventListener('click', () => {
+        const input = document.getElementById('confirmarContrasena');
+        const icon = document.getElementById('eyeIcon2');
+        const visible = input.type === 'text';
+        input.type = visible ? 'password' : 'text';
+        icon.classList.toggle('bi-eye');
+        icon.classList.toggle('bi-eye-slash');
+    });
 });

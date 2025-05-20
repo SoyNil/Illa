@@ -18,17 +18,17 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <button class="btn btn-primary nav-link mx-2" onclick="window.location.href='agregar_aviso.html'">Agregar aviso</button>
+                        <li class="nav-item" id="addNoticeButton">
+                            <button class="btn btn-primary nav-link mx-2" onclick="openAddNoticeModal()">Agregar aviso</button>
                         </li>
                         <li class="nav-item" id="registerButton" style="display: none;">
                             <button class="btn btn-primary nav-link mx-2" onclick="window.location.href='registro.html'">Registrar</button>
                         </li>
                         <li class="nav-item" id="viewUsersButton" style="display: none;">
-                            <button class="btn btn-primary nav-link mx-2">Ver Usuarios</button>
+                            <button class="btn btn-primary nav-link mx-2" onclick="openViewUsersModal()">Ver Usuarios</button>
                         </li>
                         <li class="nav-item" id="viewProfileButton" style="display: none;">
-                            <button class="btn btn-primary nav-link mx-2">Ver Perfil</button>
+                            <button class="btn btn-primary nav-link mx-2" onclick="openViewProfileModal()">Ver Perfil</button>
                         </li>
                         <li class="nav-item">
                             <a href="../Controlador/logout.php" class="btn btn-secondary nav-link mx-2">Cerrar Sesión</a>
@@ -39,10 +39,10 @@
         </nav>
     </header>
     <div class="container mt-5 pt-5">
-        <div class="card shadow mb-4">
+        <div class="card shadow mb-4 d-none">
             <div class="card-body">
                 <h2 class="card-title text-center mb-4 text-light">Bienvenido</h2>
-                <div id="userInfo">
+                <div id="userInfoCard" class="d-none">
                     <p class="text-light"><strong>Nombre:</strong> <span id="nombre"></span></p>
                     <p class="text-light"><strong>Usuario:</strong> <span id="usuario"></span></p>
                     <p class="text-light"><strong>Correo:</strong> <span id="correo"></span></p>
@@ -56,7 +56,30 @@
                         <h3 class="card-title text-light mb-3">Lista de Pacientes</h3>
                         <button id="addPatientButton" class="btn btn-success mb-3" style="display: none;">Agregar Paciente</button>
                         <div class="mb-3">
-                            <input type="text" id="searchPatients" class="form-control bg-dark text-light" placeholder="Buscar por Nombre o DNI">
+                            <select id="searchType" class="form-select bg-dark text-light mb-2">
+                                <option value="nombre">Nombre</option>
+                                <option value="dni">DNI</option>
+                                <option value="psicologo">Psicólogo Asignado</option>
+                            </select>
+                            <input type="text" id="searchPatients" class="form-control bg-dark text-light mb-2" placeholder="Buscar pacientes">
+                            <select id="dateFilterType" class="form-select bg-dark text-light mb-2">
+                                <option value="">Sin filtro de fecha</option>
+                                <option value="fecha_actual">Fecha Creada</option>
+                                <option value="Fecha">Fecha de Cita</option>
+                            </select>
+                            <select id="dateRange" class="form-select bg-dark text-light mb-2">
+                                <option value="">Seleccionar rango</option>
+                                <option value="7">Últimos 7 días</option>
+                                <option value="30">Últimos 30 días</option>
+                                <option value="365">Últimos 365 días</option>
+                                <option value="custom">Personalizado</option>
+                            </select>
+                            <div id="customDateRange" class="d-none">
+                                <label for="dateFrom" class="form-label text-light">Desde</label>
+                                <input type="date" id="dateFrom" class="form-control bg-dark text-light mb-2">
+                                <label for="dateTo" class="form-label text-light">Hasta</label>
+                                <input type="date" id="dateTo" class="form-control bg-dark text-light mb-2">
+                            </div>
                         </div>
                         <div id="patientList"></div>
                     </div>
@@ -75,6 +98,12 @@
                         <canvas id="patientChart"></canvas>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div class="card shadow mt-4">
+            <div class="card-body">
+                <h3 class="card-title text-light mb-3">Avisos</h3>
+                <div id="noticeList"></div>
             </div>
         </div>
     </div>
@@ -167,6 +196,123 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal para agregar aviso -->
+    <div class="modal fade" id="addNoticeModal" tabindex="-1" aria-labelledby="addNoticeModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark text-light">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addNoticeModalLabel">Agregar Aviso</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addNoticeForm">
+                        <input type="hidden" id="addNoticeUserId">
+                        <input type="hidden" id="addNoticeUserName">
+                        <div class="mb-3">
+                            <label for="addNoticeText" class="form-label">Aviso</label>
+                            <textarea class="form-control bg-dark text-light" id="addNoticeText" rows="4" required></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" onclick="addNotice()">Agregar Aviso</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para ver usuarios (solo administradores) -->
+    <div class="modal fade" id="viewUsersModal" tabindex="-1" aria-labelledby="viewUsersModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content bg-dark text-light">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewUsersModalLabel">Lista de Psicólogos</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="psychologistList"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para editar usuario -->
+    <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark text-light">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editUserModalLabel">Editar Psicólogo</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editUserForm">
+                        <input type="hidden" id="editUserId">
+                        <div class="mb-3">
+                            <label for="editUserNombre" class="form-label">Nombre</label>
+                            <input type="text" class="form-control bg-dark text-light" id="editUserNombre" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editUserApellido" class="form-label">Apellido</label>
+                            <input type="text" class="form-control bg-dark text-light" id="editUserApellido" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editUserUsuario" class="form-label">Usuario</label>
+                            <input type="text" class="form-control bg-dark text-light" id="editUserUsuario" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editUserCorreo" class="form-label">Correo</label>
+                            <input type="email" class="form-control bg-dark text-light" id="editUserCorreo" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editUserContrasena" class="form-label">Contraseña</label>
+                            <input type="password" class="form-control bg-dark text-light" id="editUserContrasena">
+                            <small class="form-text text-light">Dejar en blanco para no cambiar.</small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editUserOcupacion" class="form-label">Ocupación</label>
+                            <select class="form-select bg-dark text-light" id="editUserOcupacion" required>
+                                <option value="1">Administrador</option>
+                                <option value="2">Psicólogo</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" onclick="saveUserChanges()">Guardar Cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para ver perfil (solo psicólogos) -->
+    <div class="modal fade" id="viewProfileModal" tabindex="-1" aria-labelledby="viewProfileModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark text-light">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewProfileModalLabel">Mi Perfil</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-light"><strong>Nombre:</strong> <span id="profileNombre"></span></p>
+                    <p class="text-light"><strong>Apellido:</strong> <span id="profileApellido"></span></p>
+                    <p class="text-light"><strong>Usuario:</strong> <span id="profileUsuario"></span></p>
+                    <p class="text-light"><strong>Correo:</strong> <span id="profileCorreo"></span></p>
+                    <p class="text-light"><strong>Ocupación:</strong> <span id="profileOcupacion"></span></p>
+                    <p class="text-light"><strong>Fecha de Registro:</strong> <span id="profileFechaRegistro"></span></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Botón para abrir el chat -->
     <button id="chatgpt-btn" class="chatgpt-button">💬 IllaBot</button>
     <!-- Contenedor del chat -->
