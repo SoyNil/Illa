@@ -1375,3 +1375,159 @@ login: Sesión configurada: Array
 
 )
 
+login: Iniciando login
+login: Datos recibidos - Nombre: 'Angel', Usuario: 'Angel_1', Correo: 'angel@gmail.com', Contrasena: [oculta]
+login: Contraseña hasheada: Sí, Coincide: Sí
+login: Sesión configurada: Array
+(
+    [usuario] => Array
+        (
+            [ID] => 2
+            [Nombre] => Angel
+            [Apellido] => Lucas Andres
+            [Usuario] => Angel_1
+            [Correo] => angel@gmail.com
+            [Ocupacion] => 2
+            [fecha_registro] => 2024-12-16 17:55:59
+        )
+
+)
+
+login: Iniciando login
+login: Datos recibidos - Nombre: 'Nilton', Usuario: 'Nil_14', Correo: 'nilton@gmail.com', Contrasena: [oculta]
+login: Contraseña hasheada: Sí, Coincide: Sí
+login: Sesión configurada: Array
+(
+    [usuario] => Array
+        (
+            [ID] => 1
+            [Nombre] => Nilton
+            [Apellido] => Tolentino Rojas
+            [Usuario] => Nil_14
+            [Correo] => nilton@gmail.com
+            [Ocupacion] => 1
+            [fecha_registro] => 2024-12-16 17:55:59
+        )
+
+)
+
+Session: Array
+(
+    [usuario] => Array
+        (
+            [ID] => 1
+            [Nombre] => Nilton
+            [Apellido] => Tolentino Rojas
+            [Usuario] => Nil_14
+            [Correo] => nilton@gmail.com
+            [Ocupacion] => 1
+            [fecha_registro] => 2024-12-16 17:55:59
+        )
+
+)
+
+Usando conexión PDO
+Preparando consulta: SELECT ID, Nombre, Apellido, Correo, fecha_registro, Usuario, Ocupacion FROM registro
+Ejecutando consulta
+Consulta ejecutada, obteniendo resultados
+Resultados obtenidos: 6 usuarios
+Session: Array
+(
+    [usuario] => Array
+        (
+            [ID] => 1
+            [Nombre] => Nilton
+            [Apellido] => Tolentino Rojas
+            [Usuario] => Nil_14
+            [Correo] => nilton@gmail.com
+            [Ocupacion] => 1
+            [fecha_registro] => 2024-12-16 17:55:59
+        )
+
+)
+
+Usando conexión PDO
+Preparando consulta: SELECT ID, Nombre, Apellido, Correo, fecha_registro, Usuario, Ocupacion FROM registro
+Ejecutando consulta
+Consulta ejecutada, obteniendo resultados
+Resultados obtenidos: 6 usuarios
+Session: Array
+(
+    [usuario] => Array
+        (
+            [ID] => 1
+            [Nombre] => Nilton
+            [Apellido] => Tolentino Rojas
+            [Usuario] => Nil_14
+            [Correo] => nilton@gmail.com
+            [Ocupacion] => 1
+            [fecha_registro] => 2024-12-16 17:55:59
+        )
+
+)
+
+Usando conexión PDO
+Preparando consulta: SELECT ID, Nombre, Apellido, Correo, fecha_registro, Usuario, Ocupacion FROM registro
+Ejecutando consulta
+Consulta ejecutada, obteniendo resultados
+Resultados obtenidos: 6 usuarios
+Session: Array
+(
+    [usuario] => Array
+        (
+            [ID] => 1
+            [Nombre] => Nilton
+            [Apellido] => Tolentino Rojas
+            [Usuario] => Nil_14
+            [Correo] => nilton@gmail.com
+            [Ocupacion] => 1
+            [fecha_registro] => 2024-12-16 17:55:59
+        )
+
+)
+
+Usando conexión PDO
+Preparando consulta: SELECT ID, Nombre, Apellido, Correo, fecha_registro, Usuario, Ocupacion FROM registro
+Ejecutando consulta
+Consulta ejecutada, obteniendo resultados
+Resultados obtenidos: 6 usuarios
+Session: Array
+(
+    [usuario] => Array
+        (
+            [ID] => 1
+            [Nombre] => Nilton
+            [Apellido] => Tolentino Rojas
+            [Usuario] => Nil_14
+            [Correo] => nilton@gmail.com
+            [Ocupacion] => 1
+            [fecha_registro] => 2024-12-16 17:55:59
+        )
+
+)
+
+Usando conexión PDO
+Preparando consulta: SELECT ID, Nombre, Apellido, Correo, fecha_registro, Usuario, Ocupacion FROM registro
+Ejecutando consulta
+Consulta ejecutada, obteniendo resultados
+Resultados obtenidos: 6 usuarios
+Session: Array
+(
+    [usuario] => Array
+        (
+            [ID] => 1
+            [Nombre] => Nilton
+            [Apellido] => Tolentino Rojas
+            [Usuario] => Nil_14
+            [Correo] => nilton@gmail.com
+            [Ocupacion] => 1
+            [fecha_registro] => 2024-12-16 17:55:59
+        )
+
+)
+
+Usando conexión PDO
+Preparando consulta: SELECT ID, Nombre, Apellido, Correo, fecha_registro, Usuario, Ocupacion FROM registro
+Ejecutando consulta
+Consulta ejecutada, obteniendo resultados
+Resultados obtenidos: 6 usuarios
