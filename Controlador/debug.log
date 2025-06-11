@@ -1531,3 +1531,231 @@ Preparando consulta: SELECT ID, Nombre, Apellido, Correo, fecha_registro, Usuari
 Ejecutando consulta
 Consulta ejecutada, obteniendo resultados
 Resultados obtenidos: 6 usuarios
+login: Iniciando login
+login: Datos recibidos - Nombre: 'Nilton', Usuario: 'Nil_14', Correo: 'nilton@gmail.com', Contrasena: [oculta]
+login: Contraseña hasheada: Sí, Coincide: Sí
+login: Sesión configurada: Array
+(
+    [usuario] => Array
+        (
+            [ID] => 1
+            [Nombre] => Nilton
+            [Apellido] => Tolentino Rojas
+            [Usuario] => Nil_14
+            [Correo] => nilton@gmail.com
+            [Ocupacion] => 1
+            [fecha_registro] => 2024-12-16 17:55:59
+        )
+
+    [id_usuario] => 3
+    [nombre] => Nilton
+    [sexo] => Masculino
+    [fecha_nacimiento] => 2004-04-14
+    [apellido] => Tolentino Rojas
+    [correo] => nilton@gmail.com
+)
+
+login: Iniciando login
+login: Datos recibidos - Nombre: 'Angel', Usuario: 'Angel_1', Correo: 'angel@gmail.com', Contrasena: [oculta]
+login: Contraseña hasheada: Sí, Coincide: Sí
+login: Sesión configurada: Array
+(
+    [usuario] => Array
+        (
+            [ID] => 2
+            [Nombre] => Angel
+            [Apellido] => Lucas Andres
+            [Usuario] => Angel_1
+            [Correo] => angel@gmail.com
+            [Ocupacion] => 2
+            [fecha_registro] => 2024-12-16 17:55:59
+        )
+
+    [id_usuario] => 3
+    [nombre] => Nilton
+    [sexo] => Masculino
+    [fecha_nacimiento] => 2004-04-14
+    [apellido] => Tolentino Rojas
+    [correo] => nilton@gmail.com
+)
+
+Session: Array
+(
+    [usuario] => Array
+        (
+            [ID] => 2
+            [Nombre] => Angel
+            [Apellido] => Lucas Andres
+            [Usuario] => Angel_1
+            [Correo] => angel@gmail.com
+            [Ocupacion] => 2
+            [fecha_registro] => 2024-12-16 17:55:59
+        )
+
+    [id_usuario] => 3
+    [nombre] => Nilton
+    [sexo] => Masculino
+    [fecha_nacimiento] => 2004-04-14
+    [apellido] => Tolentino Rojas
+    [correo] => nilton@gmail.com
+)
+
+Fallo en verificación de sesión
+login: Iniciando login
+login: Datos recibidos - Nombre: 'Nilton', Usuario: 'Nil_14', Correo: 'nilton@gmail.com', Contrasena: [oculta]
+login: Contraseña hasheada: Sí, Coincide: Sí
+login: Sesión configurada: Array
+(
+    [usuario] => Array
+        (
+            [ID] => 1
+            [Nombre] => Nilton
+            [Apellido] => Tolentino Rojas
+            [Usuario] => Nil_14
+            [Correo] => nilton@gmail.com
+            [Ocupacion] => 1
+            [fecha_registro] => 2024-12-16 17:55:59
+        )
+
+)
+
+Session: Array
+(
+    [usuario] => Array
+        (
+            [ID] => 1
+            [Nombre] => Nilton
+            [Apellido] => Tolentino Rojas
+            [Usuario] => Nil_14
+            [Correo] => nilton@gmail.com
+            [Ocupacion] => 1
+            [fecha_registro] => 2024-12-16 17:55:59
+        )
+
+)
+
+Usando conexión PDO
+Preparando consulta: SELECT ID, Nombre, Apellido, Correo, fecha_registro, Usuario, Ocupacion FROM registro
+Ejecutando consulta
+Consulta ejecutada, obteniendo resultados
+Resultados obtenidos: 6 usuarios
+Session: Array
+(
+    [usuario] => Array
+        (
+            [ID] => 1
+            [Nombre] => Nilton
+            [Apellido] => Tolentino Rojas
+            [Usuario] => Nil_14
+            [Correo] => nilton@gmail.com
+            [Ocupacion] => 1
+            [fecha_registro] => 2024-12-16 17:55:59
+        )
+
+)
+
+Usando conexión PDO
+Preparando consulta: SELECT ID, Nombre, Apellido, Correo, fecha_registro, Usuario, Ocupacion FROM registro
+Ejecutando consulta
+Consulta ejecutada, obteniendo resultados
+Resultados obtenidos: 6 usuarios
+Session: Array
+(
+    [usuario] => Array
+        (
+            [ID] => 1
+            [Nombre] => Nilton
+            [Apellido] => Tolentino Rojas
+            [Usuario] => Nil_14
+            [Correo] => nilton@gmail.com
+            [Ocupacion] => 1
+            [fecha_registro] => 2024-12-16 17:55:59
+        )
+
+)
+
+Usando conexión PDO
+Preparando consulta: SELECT ID, Nombre, Apellido, Correo, fecha_registro, Usuario, Ocupacion FROM registro
+Ejecutando consulta
+Consulta ejecutada, obteniendo resultados
+Resultados obtenidos: 6 usuarios
+Session: Array
+(
+    [usuario] => Array
+        (
+            [ID] => 1
+            [Nombre] => Nilton
+            [Apellido] => Tolentino Rojas
+            [Usuario] => Nil_14
+            [Correo] => nilton@gmail.com
+            [Ocupacion] => 1
+            [fecha_registro] => 2024-12-16 17:55:59
+        )
+
+)
+
+Usando conexión PDO
+Preparando consulta: SELECT ID, Nombre, Apellido, Correo, fecha_registro, Usuario, Ocupacion FROM registro
+Ejecutando consulta
+Consulta ejecutada, obteniendo resultados
+Resultados obtenidos: 6 usuarios
+edit_user Session: Array
+(
+    [usuario] => Array
+        (
+            [ID] => 1
+            [Nombre] => Nilton
+            [Apellido] => Tolentino Rojas
+            [Usuario] => Nil_14
+            [Correo] => nilton@gmail.com
+            [Ocupacion] => 1
+            [fecha_registro] => 2024-12-16 17:55:59
+        )
+
+)
+
+edit_user: Conexión PDO obtenida
+Session: Array
+(
+    [usuario] => Array
+        (
+            [ID] => 1
+            [Nombre] => Nilton
+            [Apellido] => Tolentino Rojas
+            [Usuario] => Nil_14
+            [Correo] => nilton@gmail.com
+            [Ocupacion] => 1
+            [fecha_registro] => 2024-12-16 17:55:59
+        )
+
+)
+
+Usando conexión PDO
+Preparando consulta: SELECT ID, Nombre, Apellido, Correo, fecha_registro, Usuario, Ocupacion FROM registro
+Ejecutando consulta
+Consulta ejecutada, obteniendo resultados
+Resultados obtenidos: 6 usuarios
+login: Iniciando login
+login: Datos recibidos - Nombre: 'Nilton', Usuario: 'Nil_14', Correo: 'nilton@gmail.com', Contrasena: [oculta]
+login: Contraseña hasheada: Sí, Coincide: Sí
+login: Sesión configurada: Array
+(
+    [usuario] => Array
+        (
+            [ID] => 1
+            [Nombre] => Nilton
+            [Apellido] => Tolentino Rojas
+            [Usuario] => Nil_14
+            [Correo] => nilton@gmail.com
+            [Ocupacion] => 1
+            [fecha_registro] => 2024-12-16 17:55:59
+        )
+
+    [id_usuario] => 3
+    [nombre] => Nilton
+    [sexo] => Masculino
+    [fecha_nacimiento] => 2004-04-14
+    [apellido] => Tolentino Rojas
+    [correo] => nilton@gmail.com
+)
+

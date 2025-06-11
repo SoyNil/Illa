@@ -44,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Construir una descripción detallada del esquema
-    $schema_description = "Base de datos: base_sueldo\n\n";
+    $schema_description = "Base de datos\n\n";
     $schema_description .= "Notas importantes:\n";
     $schema_description .= "- La tabla `pacientes` tiene una columna `Fecha` (tipo date) que indica la fecha de la cita, es decir, la fecha en que el paciente fue atendido.\n";
     $schema_description .= "- La columna `fecha_actual` en `pacientes` indica la fecha de registro del paciente y NO debe usarse para consultas sobre atenciones.\n";
@@ -73,62 +73,112 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $schema_description .= "\n";
     }
 
-    // Manejo directo de preguntas comunes
+    // Definir preguntas manejadas localmente usando un arreglo asociativo
+    $preguntas = [
+        // Pregunta: Saludos simples
+        '/\b(hola|qué tal|que tal|buenos días|buenas tardes|buenas noches)\b/i' => [
+            'respuesta' => function($result, $matches) {
+                return "Hola, ¿en qué puedo ayudarte con la base de datos?";
+            }
+        ],
+        // Pregunta: Preguntas fuera de contexto
+        '/^(?!.*\b(pacientes|atendidos|atendió|pago|pagos|usuario|usuarios|fecha)\b).*$/i' => [
+            'respuesta' => function($result, $matches) {
+                return "Lo siento, no tengo conocimientos sobre eso.";
+            }
+        ],
+        // Pregunta: Cuántos pacientes fueron atendidos en la última semana
+        '/\b(cuantos|cuántos)\s+pacientes.*(atendidos|atendió).*(\búltima semana|\bultima semana|\búltimos 7 días|\bultimos 7 dias)\b/i' => [
+            'sql' => 'SELECT COUNT(*) as total FROM pacientes WHERE Atendido = 1 AND Fecha >= CURDATE() - INTERVAL 7 DAY',
+            'respuesta' => function($result) {
+                $count = $result['total'];
+                return $count == 0 ? "No se atendieron pacientes en la última semana." : "Se atendieron $count pacientes en la última semana.";
+            }
+        ],
+        // Pregunta: Cuántos pacientes atendió un usuario específico
+        '/\b(cuantos|cuántos)\s+pacientes.*(atendidos|atendió)\s+([\w_]+)\b/i' => [
+            'sql' => 'SELECT COUNT(*) as total FROM pacientes p JOIN registro r ON p.Usuario_ID = r.ID WHERE r.Usuario = ? AND p.Atendido = 1',
+            'params' => function($matches) { return [$matches[3]]; },
+            'respuesta' => function($result, $matches) {
+                $count = $result['total'];
+                $usuario = $matches[3];
+                return $count == 0 ? "$usuario no atendió pacientes." : "$usuario atendió $count paciente" . ($count > 1 ? "s" : "") . ".";
+            }
+        ],
+        // Pregunta: Cuánto se le debe pagar a un usuario específico
+        '/\b(cuanto|cuánto)\s+(se le debe pagar|pagar)\s+a\s+([\w_]+)\b/i' => [
+            'sql' => 'SELECT SUM(p.Precio_Descuento) as total FROM pacientes p JOIN registro r ON p.Usuario_ID = r.ID WHERE r.Usuario = ? AND p.Atendido = 1',
+            'params' => function($matches) { return [$matches[3]]; },
+            'respuesta' => function($result, $matches) {
+                $total = $result['total'];
+                $usuario = $matches[3];
+                return ($total === null || $total == 0) ? "No hay pagos pendientes para $usuario." : "Se le debe pagar $$total a $usuario.";
+            }
+        ],
+        // Pregunta: Cuántos pacientes fueron atendidos en una fecha específica
+        '/\b(cuantos|cuántos)\s+pacientes.*(atendidos|atendió).*en\s+(\d{4}-\d{2}-\d{2})\b/i' => [
+            'sql' => 'SELECT COUNT(*) as total FROM pacientes WHERE Atendido = 1 AND Fecha = ?',
+            'params' => function($matches) { return [$matches[3]]; },
+            'respuesta' => function($result, $matches) {
+                $count = $result['total'];
+                $fecha = $matches[3];
+                return $count == 0 ? "No se atendieron pacientes el $fecha." : "Se atendieron $count pacientes el $fecha.";
+            }
+        ],
+        // Pregunta: Total de pagos pendientes para todos los usuarios
+        '/\b(cuanto|cuánto)\s+(total|suma).*(pagos|debe pagar)\s*(pendientes|todos)?\b/i' => [
+            'sql' => 'SELECT SUM(p.Precio_Descuento) as total FROM pacientes p WHERE p.Atendido = 1',
+            'respuesta' => function($result) {
+                $total = $result['total'];
+                return ($total === null || $total == 0) ? "No hay pagos pendientes." : "El total de pagos pendientes es $$total.";
+            }
+        ],
+        // Pregunta: Qué usuarios atendieron pacientes en la última semana
+        '/\b(quiénes|quienes|qué usuarios).*(atendieron|atendió).*(\búltima semana|\bultima semana|\búltimos 7 días|\bultimos 7 dias)\b/i' => [
+            'sql' => 'SELECT DISTINCT r.Usuario FROM pacientes p JOIN registro r ON p.Usuario_ID = r.ID WHERE p.Atendido = 1 AND p.Fecha >= CURDATE() - INTERVAL 7 DAY',
+            'respuesta' => function($result) {
+                if (empty($result)) {
+                    return "No hay usuarios que hayan atendido pacientes en la última semana.";
+                }
+                $usuarios = array_column($result, 'Usuario');
+                return "Los usuarios que atendieron pacientes en la última semana son: " . implode(", ", $usuarios) . ".";
+            }
+        ],
+        // Pregunta: Cuántos pacientes no fueron atendidos
+        '/\b(cuantos|cuántos)\s+pacientes.*no.*(atendidos|atendió)\b/i' => [
+            'sql' => 'SELECT COUNT(*) as total FROM pacientes WHERE Atendido = 0',
+            'respuesta' => function($result) {
+                $count = $result['total'];
+                return $count == 0 ? "No hay pacientes sin atender." : "Hay $count pacientes que no fueron atendidos.";
+            }
+        ]
+    ];
+
+    // Manejo de preguntas locales
     $respuesta = "";
     $handled_locally = false;
+    $matches = [];
 
-    // Pregunta: Cuántos pacientes fueron atendidos en la última semana
-    if (preg_match("/\b(cuantos|cuántos)\s+pacientes.*(atendidos|atendió).*(\búltima semana|\bultima semana|\búltimos 7 días|\bultimos 7 dias)\b/i", $mensaje)) {
-        $handled_locally = true;
-        try {
-            $stmt = $pdo->query("SELECT COUNT(*) as total FROM pacientes WHERE Atendido = 1 AND Fecha >= CURDATE() - INTERVAL 7 DAY");
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
-            $count = $result['total'];
-            if ($count == 0) {
-                $respuesta = "No se atendieron pacientes en la última semana.";
-            } else {
-                $respuesta = "Se atendieron $count pacientes en la última semana.";
+    foreach ($preguntas as $patron => $config) {
+        if (preg_match($patron, $mensaje, $matches)) {
+            $handled_locally = true;
+            try {
+                if (isset($config['sql'])) {
+                    if (isset($config['params'])) {
+                        $stmt = $pdo->prepare($config['sql']);
+                        $stmt->execute($config['params']($matches));
+                    } else {
+                        $stmt = $pdo->query($config['sql']);
+                    }
+                    $result = isset($config['fetchAll']) ? $stmt->fetchAll(PDO::FETCH_ASSOC) : $stmt->fetch(PDO::FETCH_ASSOC);
+                } else {
+                    $result = null;
+                }
+                $respuesta = $config['respuesta']($result, $matches);
+            } catch (PDOException $e) {
+                $respuesta = "Error al procesar la consulta: " . $e->getMessage();
             }
-        } catch (PDOException $e) {
-            $respuesta = "Error al procesar la consulta: " . $e->getMessage();
-        }
-    }
-
-    // Pregunta: Cuántos pacientes atendió un usuario específico
-    if (preg_match("/\b(cuantos|cuántos)\s+pacientes.*(atendidos|atendió)\s+([\w_]+)\b/i", $mensaje, $matches)) {
-        $handled_locally = true;
-        $usuario = $matches[3];
-        try {
-            $stmt = $pdo->prepare("SELECT COUNT(*) as total FROM pacientes p JOIN registro r ON p.Usuario_ID = r.ID WHERE r.Usuario = ? AND p.Atendido = 1");
-            $stmt->execute([$usuario]);
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
-            $count = $result['total'];
-            if ($count == 0) {
-                $respuesta = "$usuario no atendió pacientes.";
-            } else {
-                $respuesta = "$usuario atendió $count paciente" . ($count > 1 ? "s" : "") . ".";
-            }
-        } catch (PDOException $e) {
-            $respuesta = "Error al procesar la consulta: " . $e->getMessage();
-        }
-    }
-
-    // Pregunta: Cuánto se le debe pagar a un usuario específico
-    if (preg_match("/\b(cuanto|cuánto)\s+(se le debe pagar|pagar)\s+a\s+([\w_]+)\b/i", $mensaje, $matches)) {
-        $handled_locally = true;
-        $usuario = $matches[3];
-        try {
-            $stmt = $pdo->prepare("SELECT SUM(p.Precio_Descuento) as total FROM pacientes p JOIN registro r ON p.Usuario_ID = r.ID WHERE r.Usuario = ? AND p.Atendido = 1");
-            $stmt->execute([$usuario]);
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
-            $total = $result['total'];
-            if ($total === null || $total == 0) {
-                $respuesta = "No hay pagos pendientes para $usuario.";
-            } else {
-                $respuesta = "Se le debe pagar $$total a $usuario.";
-            }
-        } catch (PDOException $e) {
-            $respuesta = "Error al procesar la consulta: " . $e->getMessage();
+            break;
         }
     }
 
@@ -137,18 +187,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $together_api_key = "d285b1cfe48c461f457e1a3d0241826e4f17d04bc98e5dead7d48c9107912a4e";
         $together_api_url = "https://api.together.xyz/v1/chat/completions";
 
+        // Prompt mejorado con ejemplos y restricción para preguntas fuera de contexto
+        $system_prompt = "Eres un asistente que responde preguntas sobre una base de datos MySQL. " .
+                         "Proporciona respuestas breves, claras y en lenguaje natural, basadas únicamente en la información del esquema proporcionado. " .
+                         "Si la pregunta requiere una consulta SQL, genera la consulta internamente y devuelve solo el resultado final en una frase clara. " .
+                         "No incluyas la consulta SQL ni explicaciones técnicas a menos que se soliciten explícitamente con palabras como 'muestra la consulta' o 'explica'. " .
+                         "No menciones limitaciones como 'no tengo acceso a los datos'. " .
+                         "Si no hay datos, indica claramente que no se encontraron resultados y sugiere una posible razón. " .
+                         "Si la pregunta no está relacionada con la base de datos (por ejemplo, no menciona pacientes, pagos, usuarios o fechas), responde únicamente: 'Lo siento, no tengo conocimientos sobre eso.' " .
+                         "Ejemplos de consultas válidas:\n" .
+                         "- Pregunta: 'Cuántos pacientes fueron atendidos en 2025-06-01?' -> Consulta: SELECT COUNT(*) FROM pacientes WHERE Atendido = 1 AND Fecha = '2025-06-01'\n" .
+                         "- Pregunta: 'Cuánto se le debe pagar a Juan?' -> Consulta: SELECT SUM(p.Precio_Descuento) FROM pacientes p JOIN registro r ON p.Usuario_ID = r.ID WHERE r.Usuario = 'Juan' AND p.Atendido = 1\n" .
+                         "- Pregunta: 'Qué usuarios atendieron pacientes esta semana?' -> Consulta: SELECT DISTINCT r.Usuario FROM pacientes p JOIN registro r ON p.Usuario_ID = r.ID WHERE p.Atendido = 1 AND p.Fecha >= CURDATE() - INTERVAL 7 DAY\n" .
+                         "Esquema de la base de datos:\n\n$schema_description";
+
         $data = [
             "model" => "meta-llama/Llama-3.3-70B-Instruct-Turbo-Free",
             "messages" => [
                 [
                     "role" => "system",
-                    "content" => "Eres un asistente que responde preguntas sobre una base de datos MySQL llamada 'base_sueldo'. " .
-                                 "Proporciona respuestas breves, claras y en lenguaje natural, basadas únicamente en la información del esquema proporcionado. " .
-                                 "Si la pregunta requiere una consulta SQL, genera la consulta internamente y devuelve solo el resultado final en una frase clara. " .
-                                 "No incluyas la consulta SQL ni explicaciones técnicas a menos que se soliciten explícitamente con palabras como 'muestra la consulta' o 'explica'. " .
-                                 "No menciones limitaciones como 'no tengo acceso a los datos'. " .
-                                 "Si no hay datos, indica claramente que no se encontraron resultados y sugiere una posible razón. " .
-                                 "Esquema de la base de datos:\n\n$schema_description"
+                    "content" => $system_prompt
                 ],
                 ["role" => "user", "content" => $mensaje]
             ],
@@ -184,36 +242,41 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if (stripos($sql_query, 'fecha_actual') !== false && stripos($mensaje, 'atendid') !== false) {
                 $sql_query = preg_replace('/fecha_actual/', 'Fecha', $sql_query);
             }
-            try {
-                $stmt = $pdo->query($sql_query);
-                $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                
-                // Procesar el resultado
-                if (empty($resultados)) {
-                    $respuesta = "No se encontraron datos. Es posible que no haya registros que coincidan con la consulta.";
-                } else {
-                    $first_row = $resultados[0];
-                    $key = key($first_row);
-                    $value = $first_row[$key];
+            // Validación: Evitar operaciones peligrosas
+            if (preg_match('/\b(DELETE|UPDATE|DROP|INSERT)\b/i', $sql_query)) {
+                $respuesta = "Error: No se permiten operaciones de escritura en la base de datos.";
+            } else {
+                try {
+                    $stmt = $pdo->query($sql_query);
+                    $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     
-                    if (stripos($sql_query, 'COUNT') !== false) {
-                        if ($value == 0) {
-                            $respuesta = "No se encontraron resultados para la consulta.";
-                        } else {
-                            $respuesta = "Se encontraron $value resultados.";
-                        }
-                    } elseif (stripos($sql_query, 'SUM') !== false) {
-                        if ($value === null || $value == 0) {
-                            $respuesta = "No hay montos a pagar.";
-                        } else {
-                            $respuesta = "El total a pagar es $$value.";
-                        }
+                    // Procesar el resultado
+                    if (empty($resultados)) {
+                        $respuesta = "No se encontraron datos. Es posible que no haya registros que coincidan con la consulta.";
                     } else {
-                        $respuesta = json_encode($resultados, JSON_PRETTY_PRINT);
+                        $first_row = $resultados[0];
+                        $key = key($first_row);
+                        $value = $first_row[$key];
+                        
+                        if (stripos($sql_query, 'COUNT') !== false) {
+                            if ($value == 0) {
+                                $respuesta = "No se encontraron resultados para la consulta.";
+                            } else {
+                                $respuesta = "Se encontraron $value resultados.";
+                            }
+                        } elseif (stripos($sql_query, 'SUM') !== false) {
+                            if ($value === null || $value == 0) {
+                                $respuesta = "No hay montos a pagar.";
+                            } else {
+                                $respuesta = "El total a pagar es $$value.";
+                            }
+                        } else {
+                            $respuesta = json_encode($resultados, JSON_PRETTY_PRINT);
+                        }
                     }
+                } catch (PDOException $e) {
+                    $respuesta = "Error al procesar la consulta: " . $e->getMessage();
                 }
-            } catch (PDOException $e) {
-                $respuesta = "Error al procesar la consulta: " . $e->getMessage();
             }
         }
 
@@ -227,10 +290,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 ?>
 
 <link rel="stylesheet" href="../Modelo/estilosChatBot.css">
-<!-- INTERFAZ DEL CHATBOT -->
+<!-- INTERFAZ DEL CHATBOT MEJORADA -->
 <div class="chat-container">
     <div class="chat-header">IllaBot</div>
-    <div id="chat" class="chat-body"></div>
+    <div id="chat" class="chat-body">
+        <p><strong>Bot:</strong> ¡Hola! Puedo responder preguntas sobre la base de datos de pacientes. Ejemplos:<br>
+        - ¿Cuántos pacientes fueron atendidos en la última semana?<br>
+        - ¿Cuánto se le debe pagar a [nombre]?<br>
+        - ¿Cuántos pacientes fueron atendidos el 2025-06-01?<br>
+        - ¿Qué usuarios atendieron pacientes esta semana?<br>
+        - ¿Cuántos pacientes no fueron atendidos?<br>
+        - ¿Cuál es el total de pagos pendientes?<br>
+        Escribe tu pregunta abajo.</p>
+    </div>
     <div class="chat-input">
         <input type="text" id="mensaje" placeholder="Escribe un mensaje..." onkeypress="if(event.key === 'Enter') enviarMensaje();">
         <button onclick="enviarMensaje()">Enviar</button>
@@ -250,7 +322,7 @@ function enviarMensaje() {
     chatBody.innerHTML += "<p><strong>Bot:</strong> <span class='loading'>Cargando...</span></p>";
     chatBody.scrollTop = chatBody.scrollHeight;
 
-    var xhr = new XMLHttpwiazdRequest();
+    var xhr = new XMLHttpRequest();
     xhr.open("POST", "chatbot.php", true);
     xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhr.onreadystatechange = function () {
